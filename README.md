@@ -1,7 +1,7 @@
-# bootcamp-module-sre
+# Bootcamp Module SRE
 
-# Instalar c9 
-npm install -g c9
+# Utilidades 
+> `npm install -g c9`
 
 # GitHub
 
