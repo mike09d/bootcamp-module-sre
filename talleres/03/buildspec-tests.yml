@@ -11,7 +11,7 @@ phases:
       - pip3 install pytest
       - pip3 install -r backend/requirements.txt
       - rm -rf dspt
-      - mkdir test-reports
+      - mkdir backend/test-reports
   build:
     commands:
       - echo Ejecutar comando de pruebas pytest
@@ -30,7 +30,7 @@ reports:
   coverage:
     files:
       - "coverage/*"
-    base-directory: 'test-reports'
+    base-directory: 'backend/test-reports'
     discard-paths: yes
   report:
     files:
