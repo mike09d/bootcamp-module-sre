@@ -7,3 +7,4 @@ phases:
   build:
     commands:
       - echo Ejecutar comando de pruebas pytest
+      - pytest
