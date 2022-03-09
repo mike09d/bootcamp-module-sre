@@ -10,9 +10,33 @@ phases:
       - pip3 install --upgrade pip
       - pip3 install pytest
       - pip3 install -r backend/requirements.txt
-
+      - rm -rf dspt
+      - mkdir test-reports
   build:
     commands:
       - echo Ejecutar comando de pruebas pytest
       - cd backend
       - python -m pytest
+        --html=test-reports/report.html
+        --self-contained-html
+        -s
+        -v
+        --cov=dspt 
+        --cov-report=html:test-reports/coverage 
+        --junitxml=test-reports/junit.xml 
+        --log-file=test-reports/logs.txt 
+        tests
+reports:
+  coverage:
+    files:
+      - "coverage/*"
+    base-directory: 'test-reports'
+    discard-paths: yes
+  report:
+    files:
+      - 'junit.xml'
+      - 'report.html'
+      - 'assets/*'
+    base-directory: 'test-reports'
+    discard-paths: yes
+    file-format: JunitXml
