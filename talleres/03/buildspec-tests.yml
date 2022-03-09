@@ -18,7 +18,6 @@ phases:
       - cd backend
       - python -m pytest
         --html=backend/test-reports/report.html
-        --self-contained-html
         -s
         -v
         --cov=dspt 
