@@ -12,4 +12,4 @@ phases:
     commands:
       - echo Ejecutar comando de pruebas pytest
       - cd backend
-      - pytest
+      - python -m pytest
