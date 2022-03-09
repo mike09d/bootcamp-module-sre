@@ -16,20 +16,15 @@ phases:
     commands:
       - echo Ejecutar comando de pruebas pytest
       - cd backend
-      - pytest
+      - python -m pytest
         -s
         -v
+        --junitxml=test-reports/junit.xml 
+        --log-file=test-reports/logs.txt
 reports:
-  coverage:
-    files:
-      - "backend/coverage/*"
-    base-directory: 'backend/test-reports'
-    discard-paths: yes
   report:
     files:
       - 'junit.xml'
-      - 'report.html'
-      - 'assets/*'
     base-directory: 'test-reports'
     discard-paths: yes
     file-format: JunitXml
