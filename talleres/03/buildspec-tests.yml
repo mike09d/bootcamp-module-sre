@@ -11,4 +11,4 @@ phases:
   build:
     commands:
       - echo Ejecutar comando de pruebas pytest
-      - pytest backend/tests
+      - pytest
