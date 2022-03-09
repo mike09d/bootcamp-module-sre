@@ -17,14 +17,14 @@ phases:
       - echo Ejecutar comando de pruebas pytest
       - cd backend
       - python -m pytest
-        --html=test-reports/report.html
+        --html=backend/test-reports/report.html
         --self-contained-html
         -s
         -v
         --cov=dspt 
-        --cov-report=html:test-reports/coverage 
-        --junitxml=test-reports/junit.xml 
-        --log-file=test-reports/logs.txt 
+        --cov-report=html:backend/test-reports/coverage 
+        --junitxml=backend/test-reports/junit.xml 
+        --log-file=backend/test-reports/logs.txt 
         tests
 reports:
   coverage:
