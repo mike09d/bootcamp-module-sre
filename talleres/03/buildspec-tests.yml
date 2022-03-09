@@ -23,8 +23,7 @@ phases:
         --cov=dspt 
         --cov-report=html:backend/test-reports/coverage 
         --junitxml=backend/test-reports/junit.xml 
-        --log-file=backend/test-reports/logs.txt 
-        tests
+        --log-file=backend/test-reports/logs.txt
 reports:
   coverage:
     files:
