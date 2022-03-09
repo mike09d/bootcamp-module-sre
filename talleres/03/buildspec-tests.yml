@@ -29,7 +29,7 @@ phases:
 reports:
   coverage:
     files:
-      - "coverage/*"
+      - "backend/coverage/*"
     base-directory: 'backend/test-reports'
     discard-paths: yes
   report:
