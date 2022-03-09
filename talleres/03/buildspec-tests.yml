@@ -17,7 +17,6 @@ phases:
       - echo Ejecutar comando de pruebas pytest
       - cd backend
       - pytest
-        --html=test-reports/report.html
         -s
         -v
 reports:
