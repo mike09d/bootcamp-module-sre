@@ -1,9 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    # Definir el runtime adecuado
-      - echo Instalar las dependencias de Python
   pre_build:
     commands:
       - echo Instalar las dependencias de Python
