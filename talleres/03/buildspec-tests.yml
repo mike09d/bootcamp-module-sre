@@ -25,6 +25,6 @@ reports:
   report:
     files:
       - 'junit.xml'
-    base-directory: 'test-reports'
+    base-directory: 'backend/test-reports'
     discard-paths: yes
     file-format: JunitXml
