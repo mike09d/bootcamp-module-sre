@@ -1,0 +1,14 @@
+version: 0.2
+
+phases:
+  install:
+     commands:
+        - curl -0 https://release.hashicorp.com/terraform/0.14.7/terraform_0.14.7_linux_amd64.zip
+        - yum install unzip -y
+        - unzip terraform_0.14.7_linux_amd64.zip -d /usr/bin/
+  build:
+    commands:
+      - echo Build started on 'date'
+      - cd talleres/02/terraform
+      - terraform init
+      - terraform plan
