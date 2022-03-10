@@ -6,7 +6,7 @@ phases:
       python: 3.7
   pre_build:
     commands:
-      - echo Instalar las dependencias de Python
+      - echo Instalar las dependencias de Python pull
       - pip3 install --upgrade pip
       - pip3 install pytest
       - pip3 install -r backend/requirements.txt
