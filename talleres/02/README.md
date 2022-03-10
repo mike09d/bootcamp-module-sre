@@ -57,6 +57,12 @@ template = "${file("./scripts/init.sh")}"
 }
 ```
 
+## Crear instance rol del IAM
+
+![diagrama](instance-role.jpeg)
+
+
+
 ```json
 resource "aws_launch_configuration" "main" {
   name_prefix   = "${var.project_name}-lc-main"
