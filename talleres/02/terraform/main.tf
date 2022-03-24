@@ -11,59 +11,22 @@ data "aws_subnet_ids" "private" {
   }
 }
 
+
+# resource "aws_instance" "prod" {
+#     instance_type = "t2.micro"
+#     ami = "ami-0915bcb5fa77e4892"
+#     user_data = "${data.template_file.user_data.rendered}"
+#     security_groups = ["${aws_security_group.sg.name}"]
+# }
+
 ## SECURITY GROUP
 
-resource "aws_security_group" "sg" {
-    name = "http"
-    description = "Allow http and https traffict only"
-    vpc_id = data.aws_vpc.default.id
-
-    ingress {
-        description = "TLS from VPC and the net"
-        from_port   = 8000
-        to_port     = 8000
-        protocol    = "tcp"
-        cidr_blocks = [data.aws_vpc.default.cidr_block, "0.0.0.0/0"]
-    }
-    
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-}
-
-resource "aws_security_group" "alb" {
-    name = "${var.project_name}-sg-alb_http"
-    description = "Allow http and https traffict only"
-    vpc_id = data.aws_vpc.default.id
-
-    ingress {
-        description = "TLS from VPC and the net"
-        from_port   = 80
-        to_port     = 80
-        protocol    = "tcp"
-        cidr_blocks = [data.aws_vpc.default.cidr_block, "0.0.0.0/0"]
-    }
-    
-    
-  egress {
-    protocol    = "-1"
-    from_port   = 0
-    to_port     = 0
-    cidr_blocks = ["0.0.0.0/0"]
-  }
-
-}
-
-
-resource "aws_instance" "prod" {
-    instance_type = "t2.micro"
-    ami = "ami-0915bcb5fa77e4892"
-    user_data = "${data.template_file.user_data.rendered}"
-    security_groups = ["${aws_security_group.sg.name}"]
+module "sgs" {
+  source = "./modules/security-group"
+  project_name = var.project_name
+  vpc_id = data.aws_vpc.default.id
+  cidr_block = data.aws_vpc.default.cidr_block
+  ports = [8000, 80]
 }
 
 
@@ -79,7 +42,7 @@ resource "aws_launch_configuration" "main" {
   instance_type = "t2.micro"
   user_data = "${data.template_file.user_data.rendered}"
   iam_instance_profile = "ssm-role"
-  security_groups = ["${aws_security_group.sg.id}"]
+  security_groups = [module.sgs.ids[0]]
 
 
   lifecycle {
@@ -123,7 +86,7 @@ resource "aws_lb" "main" {
   name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = ["${aws_security_group.alb.id}"]
+  security_groups    = [module.sgs.ids[1]]
   subnets            = data.aws_subnet_ids.private.ids
 
   enable_deletion_protection = false

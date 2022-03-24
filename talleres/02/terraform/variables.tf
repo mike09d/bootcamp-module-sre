@@ -1,3 +1,3 @@
-variable "project_nanme" {
-    default = "mythical_Mysfits"
+variable "project_name" {
+    default = "mythicalmysfits"
 }
