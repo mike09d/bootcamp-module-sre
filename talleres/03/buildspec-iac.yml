@@ -11,12 +11,12 @@ phases:
       - echo Nothing to do in the pre_build phase...
       - cd talleres/02/terraform
       - terraform init
-      - terraform workspace select prod && terraform workspace new prod
+      - terraform workspace select prod || terraform workspace new prod
   build:
     commands:
       - echo Build started on 'date'
       - terraform plan
   post_build:
     commands:
-      - echo Build completed on `date`
+      - echo Build completed on `date xxx`
       - terraform apply --auto-approve
