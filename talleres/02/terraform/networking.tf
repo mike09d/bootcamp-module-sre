@@ -1,12 +1,12 @@
 ## NETWORKING
 data "aws_vpc" "default" {
-    id = "vpc-080aa58352099dcb7"
+    id = "vpc-0c2eb5aebaa7bb988"
 }
 
 data "aws_subnet_ids" "private" {
   vpc_id = data.aws_vpc.default.id
 
   tags = {
-    tier = "private"
+    Reach = "public"
   }
 }
