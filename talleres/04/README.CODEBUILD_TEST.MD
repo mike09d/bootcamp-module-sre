@@ -71,7 +71,7 @@ Hacer *push* a los cambios y validar que CodePipeline ejecuta las etapas de form
 
 - https://master.d3e43dmmbjepa0.amplifyapp.com/
 
-## Varios
+# Documentación AWS
 - https://docs.aws.amazon.com/codebuild/latest/userguide/build-spec-ref.html
 - https://docs.aws.amazon.com/codebuild/latest/userguide/build-env-ref-env-vars.html
 - https://docs.aws.amazon.com/codebuild/latest/userguide/available-runtimes.html
