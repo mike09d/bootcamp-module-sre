@@ -1,13 +1,13 @@
 # TERRAFORM STATE REMOTE S3
 
-1. Creamos un bucket s3 en la cuenta llamado `bi-sre-terraform-state`
+1. Creamos un bucket s3 en la cuenta llamado `bi-sre-terraform-state` con las configuraciones por defecto
 2. Creamos una tabla en dynamodb
     2.1 DynamoDB > Tables > Create table
     - *Table name*: `bi-sre-terraform-state`
     - *Partition key*: `LockID`
     Clic en `Create table`
 
-3. Adicionar el siguiente código al archivo `remote_state.tf`
+3. Adicionar el siguiente código al archivo `talleres/02/terraform/remote_state.tf`
 
 ```
 terraform {
