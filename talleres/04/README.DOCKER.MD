@@ -42,7 +42,7 @@ CMD ["app.py"]
 ## Comandos basicos para Docker
 
  - Construir imagen
-   ``` docker build --pull --rm -f "backend/Dockerfile" -t bootcampmodulesre:multistage ```
+   ``` docker build --pull --rm -f "backend/Dockerfile" . -t bootcampmodulesre:multistage ```
 
  - Correr contenedor
    ``` docker run --rm -d  -p 8080:8080 bootcampmodulesre:multistage ```
