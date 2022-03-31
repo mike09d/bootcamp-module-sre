@@ -1,4 +1,4 @@
-# Crear Dockerfile
+# Crearemos Dockerfile
 
 ```
 FROM ubuntu:latest
@@ -17,7 +17,7 @@ EXPOSE 8080
 CMD ["app.py"]
 ```
 
-## Multi-staged dependencias & codigo
+## Multi-staged dependencias & código
 
 ```
 FROM python:3.7-slim AS build
@@ -38,31 +38,32 @@ EXPOSE 8080
 ENTRYPOINT ["python3"]
 CMD ["app.py"]
 ```
-## Comando basicos para Docker
+
+## Comandos basicos para Docker
 
  - Construir imagen
- ``` docker build --pull --rm -f "backend/Dockerfile" -t bootcampmodulesre:multistage ```
+   ``` docker build --pull --rm -f "backend/Dockerfile" -t bootcampmodulesre:multistage ```
 
  - Correr contenedor
- ``` docker run --rm -d  -p 8080:8080 bootcampmodulesre:multistage ```
+   ``` docker run --rm -d  -p 8080:8080 bootcampmodulesre:multistage ```
 
  - Abrir una Terminal dentro del contenedor Docker
-``` docker exec -it :container_id bash ```
+   ``` docker exec -it :container_id bash ```
 
-- Ver todos los contenedores
-```docker ps```
+ - Ver todos los contenedores
+   ```docker ps```
 
 - Ver todos los contenedores incluyendo el peso 
-```docker ps -as```
+  ```docker ps -as```
 
 - Parar un contenedor concreto
-```docker kill :container_id```
+  ```docker kill :container_id```
 
 - Ver todas las imágenes Docker instaladas
-```docker images```
+  ```docker images```
 
 - Limpia cualquier imagen, compilación, etc. que pueda estar activa
-```docker system prune```
+  ```docker system prune```
 
 
 # CodePipeline IaC
