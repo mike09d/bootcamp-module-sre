@@ -438,7 +438,7 @@ module "fargate_mf" {
   depends_on = [module.mf_alb]
 }
 
-module "mf_alb" {
+module "mf_alb" 
   source      = "<<REEMPLAZAR_RUTA_MODULO>>"
   name        = "mf-alb-${var.environment}"
   environment = var.environment
