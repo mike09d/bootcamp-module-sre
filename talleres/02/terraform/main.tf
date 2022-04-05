@@ -6,7 +6,7 @@ module "sgs" {
   project_name = var.project_name
   vpc_id = data.aws_vpc.default.id
   cidr_block = data.aws_vpc.default.cidr_block
-  ports = [8000, 80]
+  ports = [8080, 80]
 }
 # ## AUTOSCALING GROUP
 

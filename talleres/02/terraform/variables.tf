@@ -40,7 +40,7 @@ variable "name" {
         
         variable "app_port" {
           type = number
-          default = 8000
+          default = 8080
         }
         
         # variable "cluster_id" {
@@ -61,7 +61,7 @@ variable "name" {
         variable "app_image" {
           type = string
           description = "Imagen que utilizara la aplacion en la task definition"
-          default = "878223269625.dkr.ecr.us-east-1.amazonaws.com/mf"
+          default = "878223269625.dkr.ecr.us-east-1.amazonaws.com/mf:latest"
         }
         
         
@@ -81,17 +81,20 @@ variable "name" {
         #   description = "The AWS region where resources have been deployed"
         # }
         
-        # variable "auto_scaling_max_replicas" {
-        #   type = number
-        # }
+        variable "auto_scaling_max_replicas" {
+          type = number
+          default = 10
+        }
         
-        # variable "auto_scaling_max_cpu_util" {
-        #   type = number
-        # }
+        variable "auto_scaling_max_cpu_util" {
+          type = number
+          default = 60
+        }
         
-        # variable "auto_scaling_max_memory_util" {
-        #   type = number
-        # }
+        variable "auto_scaling_max_memory_util" {
+          type = number
+          default = 80
+        }
         
         variable "environment_variables"{
         default = []

@@ -6,6 +6,7 @@ resource "aws_ecs_task_definition" "main" {
                   requires_compatibilities = ["FARGATE"]
                   cpu                      = var.fargate_cpu
                   memory                   = var.fargate_memory
+                  
                   container_definitions = jsonencode([
                     {
                       name        = var.name
