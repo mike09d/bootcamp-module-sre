@@ -1,25 +1,25 @@
 resource "aws_iam_role" "task_role" {
-  name = "ecs_tasks-${var.name}-role"
-  assume_role_policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
+  name = "ecs-tasks-${var.name}-role"
+  assume_role_policy = jsonencode({
+  Version = "2012-10-17"
+  Statement = [
     {
-      "Action": "sts:AssumeRole",
-      "Principal": {
-        "Service": "ecs-tasks.amazonaws.com"
-      },
-      "Effect": "Allow"
+      Action = "sts:AssumeRole"
+      Principal = {
+        Service = "ecs-tasks.amazonaws.com"
+      }
+      Effect = "Allow"
     }
   ]
-}
-EOF
+})
+                  lifecycle {
+                    create_before_destroy = true
+                  }
 }
 
 resource "aws_iam_role" "main_ecs_tasks" {
   name = "main_ecs_tasks-${var.name}-role"
-  assume_role_policy = <<EOF
-{
+  assume_role_policy = jsonencode({
   "Version": "2012-10-17",
   "Statement": [
     {
@@ -30,8 +30,7 @@ resource "aws_iam_role" "main_ecs_tasks" {
       "Effect": "Allow"
     }
   ]
-}
-EOF
+})
 }
 
 resource "aws_iam_role_policy" "main_ecs_tasks" {

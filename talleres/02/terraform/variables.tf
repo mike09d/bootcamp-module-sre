@@ -61,7 +61,7 @@ variable "name" {
         variable "app_image" {
           type = string
           description = "Imagen que utilizara la aplacion en la task definition"
-          default = "878223269625.dkr.ecr.us-east-1.amazonaws.com/mf:latest"
+          default = "878223269625.dkr.ecr.us-east-1.amazonaws.com/mf"
         }
         
         
