@@ -1,6 +1,6 @@
 resource "aws_iam_role" "task_role" {
       name = "ecs_tasks-${var.name}-role"
-      assume_role_policy = <<EOF
+      assume_role_policy = jsonencode(
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -13,12 +13,12 @@ resource "aws_iam_role" "task_role" {
         }
       ]
     }
-    EOF
+    )
     }
     
     resource "aws_iam_role" "main_ecs_tasks" {
       name = "main_ecs_tasks-${var.name}-role"
-      assume_role_policy = <<EOF
+      assume_role_policy = jsonencode(
     {
       "Version": "2012-10-17",
       "Statement": [
@@ -31,7 +31,7 @@ resource "aws_iam_role" "task_role" {
         }
       ]
     }
-    EOF
+    )
     }
     
     resource "aws_iam_role_policy" "main_ecs_tasks" {
