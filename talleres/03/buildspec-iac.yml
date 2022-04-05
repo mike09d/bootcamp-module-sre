@@ -11,7 +11,7 @@ phases:
       - echo Nothing to do in the pre_build phase...
       - cd talleres/02/terraform
       - terraform init
-      - terraform workspace list prod || terraform workspace new prod
+      - terraform workspace select prod || terraform workspace new prod
   build:
     commands:
       - echo Build started on 'date'
