@@ -1,0 +1,17 @@
+FROM public.ecr.aws/docker/library/python:3.7-slim AS build
+RUN apt-get update -y
+RUN apt-get install -y --no-install-recommends build-essential gcc
+RUN python -m venv --copies /opt/venv
+ENV PATH /opt/venv/bin:$PATH
+
+RUN pip3 install --upgrade pip
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+FROM public.ecr.aws/docker/library/python:3.7-slim AS final
+COPY --from=build /opt/venv /opt/venv/
+ENV PATH /opt/venv/bin:$PATH
+COPY . .
+EXPOSE 8080
+ENTRYPOINT ["python3"]
+CMD ["app.py"]

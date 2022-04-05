@@ -1,3 +1,71 @@
+# Crearemos Dockerfile
+
+```
+FROM ubuntu:latest
+RUN echo Updating existing packages, installing and upgrading python and pip.
+RUN apt-get update -y
+RUN apt-get install -y python3-pip python3-dev build-essential
+RUN pip3 install --upgrade pip
+RUN echo Copying the Mythical Mysfits Flask service into a service directory.
+COPY . /MythicalMysfitsService
+WORKDIR /MythicalMysfitsService
+RUN echo Installing Python packages listed in requirements.txt
+RUN pip3 install -r ./requirements.txt
+RUN echo Starting python and starting the Flask service...
+ENTRYPOINT ["python3"]
+EXPOSE 8080
+CMD ["app.py"]
+```
+
+## Multi-staged dependencias & código
+
+```
+FROM python:3.7-slim AS build
+RUN apt-get update -y
+RUN apt-get install -y --no-install-recommends build-essential gcc
+RUN python -m venv --copies /opt/venv
+ENV PATH /opt/venv/bin:$PATH
+
+RUN pip3 install --upgrade pip
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+
+FROM python:3.7-slim AS final
+COPY --from=build /opt/venv /opt/venv/
+ENV PATH /opt/venv/bin:$PATH
+COPY . .
+EXPOSE 8080
+ENTRYPOINT ["python3"]
+CMD ["app.py"]
+```
+
+## Comandos basicos para Docker
+
+ - Construir imagen
+   ``` docker build --pull --rm -f "backend/Dockerfile" . -t bootcampmodulesre:multistage ```
+
+ - Correr contenedor
+   ``` docker run --rm -d  -p 8080:8080 bootcampmodulesre:multistage ```
+
+ - Abrir una Terminal dentro del contenedor Docker
+   ``` docker exec -it :container_id bash ```
+
+ - Ver todos los contenedores
+   ```docker ps```
+
+- Ver todos los contenedores incluyendo el peso 
+  ```docker ps -as```
+
+- Parar un contenedor concreto
+  ```docker kill :container_id```
+
+- Ver todas las imágenes Docker instaladas
+  ```docker images```
+
+- Limpia cualquier imagen, compilación, etc. que pueda estar activa
+  ```docker system prune```
+
+
 # CodePipeline IaC
 
 Configurar manualmente un proyecto de CodePipeline para probar y desplegar la aplicación contenerizada.
@@ -50,4 +118,4 @@ phases:
       - echo Pushing the Docker image...
       - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com/$IMAGE_REPO_NAME:$IMAGE_TAG
       
-      ```
+  ```

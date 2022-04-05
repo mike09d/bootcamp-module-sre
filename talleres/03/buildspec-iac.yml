@@ -18,5 +18,5 @@ phases:
       - terraform plan
   post_build:
     commands:
-      - echo Build completed on `date xxx`
+      - echo Build completed on `date`
       - terraform apply --auto-approve
