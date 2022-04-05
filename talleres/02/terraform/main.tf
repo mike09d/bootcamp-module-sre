@@ -1,13 +1,13 @@
 
 # ## SECURITY GROUP
 
-# module "sgs" {
-#   source = "./modules/security-group"
-#   project_name = var.project_name
-#   vpc_id = data.aws_vpc.default.id
-#   cidr_block = data.aws_vpc.default.cidr_block
-#   ports = [8000, 80]
-# }
+module "sgs" {
+  source = "./modules/security-group"
+  project_name = var.project_name
+  vpc_id = data.aws_vpc.default.id
+  cidr_block = data.aws_vpc.default.cidr_block
+  ports = [8000, 80]
+}
 # ## AUTOSCALING GROUP
 
 # module "asg" {

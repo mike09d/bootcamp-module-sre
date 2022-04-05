@@ -40,7 +40,7 @@ variable "name" {
         
         variable "app_port" {
           type = number
-          default = 9000
+          default = 8000
         }
         
         # variable "cluster_id" {
@@ -65,10 +65,11 @@ variable "name" {
         }
         
         
-        # variable "replicas" {
-        #   type = string
-        #   description = "El número de instancias de la task definition"
-        # }
+        variable "replicas" {
+          type = string
+          description = "El número de instancias de la task definition"
+          default = 3
+        }
         
         # variable "aws_security_group_ecs_tasks_id" {
         #   type = string 
