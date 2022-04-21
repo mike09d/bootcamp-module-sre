@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: mf-service
+  labels:
+    app: mf
+spec:
+  type: ClusterIP
+  selector:
+    app: mf
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mf-deployment
+  labels:
+    app: mf
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: mf
+  template:
+    metadata:
+      labels:
+        app: mf
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - mf
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: mf-back
+          image: 878223269625.dkr.ecr.us-east-1.amazonaws.com/mf:latest
+          ports:
+            - containerPort: 8080

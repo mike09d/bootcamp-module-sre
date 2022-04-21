@@ -1,0 +1,48 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ng-service
+  labels:
+    app: ng
+spec:
+  type: ClusterIP
+  selector:
+    app: ng
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ng-deployment
+  labels:
+    app: ng
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: ng
+  template:
+    metadata:
+      labels:
+        app: ng
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - ng
+              topologyKey: "kubernetes.io/hostname"
+      containers:
+        - name: ng-back
+          image: nginx:1.7.9
+          ports:
+            - containerPort: 80
