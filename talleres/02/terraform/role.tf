@@ -1,5 +1,5 @@
 resource "aws_iam_role" "task_role" {
-  name = "ecs-tasks-${var.name}-role"
+  name = "ecs-tasks-${var.name}-role-eks"
   assume_role_policy = jsonencode({
   Version = "2012-10-17"
   Statement = [
@@ -18,7 +18,7 @@ resource "aws_iam_role" "task_role" {
 }
 
 resource "aws_iam_role" "main_ecs_tasks" {
-  name = "main_ecs_tasks-${var.name}-role"
+  name = "main_ecs_tasks-${var.name}-role-eks"
   assume_role_policy = jsonencode({
   "Version": "2012-10-17",
   "Statement": [
@@ -34,7 +34,7 @@ resource "aws_iam_role" "main_ecs_tasks" {
 }
 
 resource "aws_iam_role_policy" "main_ecs_tasks" {
-  name = "main_ecs_tasks-${var.name}-policy"
+  name = "main_ecs_tasks-${var.name}-policy-eks"
   role = aws_iam_role.main_ecs_tasks.id
 
   policy = <<EOF
