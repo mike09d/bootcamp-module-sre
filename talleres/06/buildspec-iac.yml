@@ -9,7 +9,7 @@ phases:
   pre_build:
     commands:
       - echo Nothing to do in the pre_build phase...
-      - cd talleres/06/terraform
+      - cd talleres/02/terraform
       - terraform init
       - terraform workspace select eks || terraform workspace new eks
   build:
