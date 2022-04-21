@@ -1,7 +1,5 @@
-# IAM ROLE
-
 resource "aws_iam_role" "eks_cluster_role" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name                  = "eks-cluster-role-${var.environment}"
   force_detach_policies = true
 
@@ -22,10 +20,11 @@ resource "aws_iam_role" "eks_cluster_role" {
   ]
 }
 POLICY
+
 }
 
 resource "aws_iam_role" "eks_node_group_role" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name                  = "eks-node-group-role-${var.environment}"
   force_detach_policies = true
 
@@ -47,10 +46,8 @@ resource "aws_iam_role" "eks_node_group_role" {
 POLICY
 }
 
-
-
 resource "aws_iam_policy" "AmazonEKSClusterCloudWatchMetricsPolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name   = "AmazonEKSClusterCloudWatchMetricsPolicy"
   policy = <<EOF
 {
@@ -69,7 +66,7 @@ EOF
 }
 
 resource "aws_iam_policy" "AmazonEKSClusterNLBPolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name   = "AmazonEKSClusterNLBPolicy"
   policy = <<EOF
 {
@@ -90,52 +87,49 @@ EOF
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
   role       = aws_iam_role.eks_cluster_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSServicePolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
   role       = aws_iam_role.eks_cluster_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSCloudWatchMetricsPolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = aws_iam_policy.AmazonEKSClusterCloudWatchMetricsPolicy[0].arn
   role       = aws_iam_role.eks_cluster_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSCluserNLBPolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = aws_iam_policy.AmazonEKSClusterNLBPolicy[0].arn
   role       = aws_iam_role.eks_cluster_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
   role       = aws_iam_role.eks_node_group_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
   role       = aws_iam_role.eks_node_group_role[0].name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
   role       = aws_iam_role.eks_node_group_role[0].name
 }
 
-
-# EKS CLUSTER
-
 resource "aws_eks_cluster" "main" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name     = "${var.cluster_name_eks}-${var.environment}"
   role_arn = aws_iam_role.eks_cluster_role[0].arn
 
@@ -143,6 +137,7 @@ resource "aws_eks_cluster" "main" {
   enabled_cluster_log_types = []
 
   vpc_config {
+    //subnet_ids = concat(var.private_subnets)
     subnet_ids = data.aws_subnet_ids.private.ids
   }
 
@@ -158,7 +153,7 @@ resource "aws_eks_cluster" "main" {
 }
 
 resource "aws_cloudwatch_log_group" "eks_cluster" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   name              = "/aws/eks/${var.cluster_name_eks}-${var.environment}/cluster"
   retention_in_days = 30
 
@@ -167,20 +162,20 @@ resource "aws_cloudwatch_log_group" "eks_cluster" {
   }
 }
 
-
 resource "aws_eks_node_group" "eks_node_group" {
-  count = local.environment == "eks" ? 1 : 0
+count = local.environment == "eks" ? 1 : 0
   cluster_name    = aws_eks_cluster.main[0].name
   node_group_name = "${var.cluster_name_eks}-${var.environment}-node_group"
   node_role_arn   = aws_iam_role.eks_node_group_role[0].arn
-  subnet_ids      = data.aws_subnet_ids.private.ids
+  //subnet_ids      = var.public_subnets
+  subnet_ids = data.aws_subnet_ids.private.ids
   disk_size = var.disk_size
   force_update_version = true
 
   scaling_config {
-    desired_size = 4
+    desired_size = 2
     max_size     = 6
-    min_size     = 4
+    min_size     = 2
   }
 
   instance_types  = [var.eks_node_group_instance_types]
@@ -194,17 +189,17 @@ resource "aws_eks_node_group" "eks_node_group" {
 
 
 data "tls_certificate" "auth" {
-  count = local.environment == "eks" ? 1 : 0
   url = aws_eks_cluster.main[0].identity[0].oidc[0].issuer
 }
 
-resource "aws_iam_openid_connect_provider" "main" { 
-  count = local.environment == "eks" ? 1 : 0
+resource "aws_iam_openid_connect_provider" "main" {
+count = local.environment == "eks" ? 1 : 0
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.auth[0].certificates[0].sha1_fingerprint]
+  thumbprint_list = [data.tls_certificate.auth.certificates[0].sha1_fingerprint]
   url             = aws_eks_cluster.main[0].identity[0].oidc[0].issuer
     depends_on = [ aws_eks_node_group.eks_node_group ]
   lifecycle {
     ignore_changes = [thumbprint_list]
   }
 }
+

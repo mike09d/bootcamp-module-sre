@@ -289,7 +289,7 @@ resource "kubernetes_deployment" "ingress" {
             "--aws-region=${var.region}",
             "--aws-max-retries=10"
           ] 
-           volume_mount {
+          volume_mount {
             mount_path = "/var/run/secrets/kubernetes.io/serviceaccount"
             name       = kubernetes_service_account.ingress.default_secret_name
             read_only  = true
@@ -300,8 +300,8 @@ resource "kubernetes_deployment" "ingress" {
 
           secret {
             secret_name = kubernetes_service_account.ingress.default_secret_name
-           }
-         }
+          }
+        }
       }
     }
   }
