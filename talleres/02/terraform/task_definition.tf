@@ -1,4 +1,5 @@
 resource "aws_ecs_task_definition" "main" {
+                  count = local.environment == "ecs" ? 1 : 0
                   family                   = var.name
                   task_role_arn = aws_iam_role.task_role.arn
                   execution_role_arn = aws_iam_role.main_ecs_tasks.arn

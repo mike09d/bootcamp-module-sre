@@ -1,7 +1,12 @@
-# IAM ROLE
+# Kubernetes
 
+
+1. Realizamos la creación de las policas
+
+- aws_iam_role.tf
+
+```
 resource "aws_iam_role" "eks_cluster_role" {
-  count = local.environment == "eks" ? 1 : 0
   name                  = "eks-cluster-role-${var.environment}"
   force_detach_policies = true
 
@@ -25,7 +30,6 @@ POLICY
 }
 
 resource "aws_iam_role" "eks_node_group_role" {
-  count = local.environment == "eks" ? 1 : 0
   name                  = "eks-node-group-role-${var.environment}"
   force_detach_policies = true
 
@@ -46,11 +50,12 @@ resource "aws_iam_role" "eks_node_group_role" {
 }
 POLICY
 }
+```
 
+- iam_policy.tf
 
-
+```
 resource "aws_iam_policy" "AmazonEKSClusterCloudWatchMetricsPolicy" {
-  count = local.environment == "eks" ? 1 : 0
   name   = "AmazonEKSClusterCloudWatchMetricsPolicy"
   policy = <<EOF
 {
@@ -69,7 +74,6 @@ EOF
 }
 
 resource "aws_iam_policy" "AmazonEKSClusterNLBPolicy" {
-  count = local.environment == "eks" ? 1 : 0
   name   = "AmazonEKSClusterNLBPolicy"
   policy = <<EOF
 {
@@ -88,62 +92,63 @@ resource "aws_iam_policy" "AmazonEKSClusterNLBPolicy" {
 }
 EOF
 }
+```
 
+- iam_role_policy_attachment.tf
+
+```
 resource "aws_iam_role_policy_attachment" "AmazonEKSClusterPolicy" {
-  count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSClusterPolicy"
-  role       = aws_iam_role.eks_cluster_role[0].name
+  role       = aws_iam_role.eks_cluster_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSServicePolicy" {
-  count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSServicePolicy"
-  role       = aws_iam_role.eks_cluster_role[0].name
+  role       = aws_iam_role.eks_cluster_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSCloudWatchMetricsPolicy" {
-  count = local.environment == "eks" ? 1 : 0
-  policy_arn = aws_iam_policy.AmazonEKSClusterCloudWatchMetricsPolicy[0].arn
-  role       = aws_iam_role.eks_cluster_role[0].name
+  policy_arn = aws_iam_policy.AmazonEKSClusterCloudWatchMetricsPolicy.arn
+  role       = aws_iam_role.eks_cluster_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSCluserNLBPolicy" {
-  count = local.environment == "eks" ? 1 : 0
-  policy_arn = aws_iam_policy.AmazonEKSClusterNLBPolicy[0].arn
-  role       = aws_iam_role.eks_cluster_role[0].name
+  policy_arn = aws_iam_policy.AmazonEKSClusterNLBPolicy.arn
+  role       = aws_iam_role.eks_cluster_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKSWorkerNodePolicy" {
-  count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKSWorkerNodePolicy"
-  role       = aws_iam_role.eks_node_group_role[0].name
+  role       = aws_iam_role.eks_node_group_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEKS_CNI_Policy" {
-  count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEKS_CNI_Policy"
-  role       = aws_iam_role.eks_node_group_role[0].name
+  role       = aws_iam_role.eks_node_group_role.name
 }
 
 resource "aws_iam_role_policy_attachment" "AmazonEC2ContainerRegistryReadOnly" {
-  count = local.environment == "eks" ? 1 : 0
   policy_arn = "arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly"
-  role       = aws_iam_role.eks_node_group_role[0].name
+  role       = aws_iam_role.eks_node_group_role.name
 }
+```
 
 
-# EKS CLUSTER
+2. Realizaremos la creación del cluster y demas recursos
 
+
+- cluster.tf
+
+```
 resource "aws_eks_cluster" "main" {
-  count = local.environment == "eks" ? 1 : 0
-  name     = "${var.cluster_name_eks}-${var.environment}"
-  role_arn = aws_iam_role.eks_cluster_role[0].arn
+  name     = "${var.cluster_name}-${var.environment}"
+  role_arn = aws_iam_role.eks_cluster_role.arn
 
   //enabled_cluster_log_types = ["api", "audit", "authenticator", "controllerManager", "scheduler"]
   enabled_cluster_log_types = []
 
   vpc_config {
-    subnet_ids = data.aws_subnet_ids.private.ids
+    subnet_ids = concat(var.private_subnets)
   }
 
   timeouts {
@@ -158,29 +163,30 @@ resource "aws_eks_cluster" "main" {
 }
 
 resource "aws_cloudwatch_log_group" "eks_cluster" {
-  count = local.environment == "eks" ? 1 : 0
-  name              = "/aws/eks/${var.cluster_name_eks}-${var.environment}/cluster"
+  name              = "/aws/eks/${var.cluster_name}-${var.environment}/cluster"
   retention_in_days = 30
 
   tags = {
-    Name        = "${var.cluster_name_eks}-${var.environment}-eks-cloudwatch-log-group"
+    Name        = "${var.cluster_name}-${var.environment}-eks-cloudwatch-log-group"
   }
 }
+```
 
+- main.tf
 
+```
 resource "aws_eks_node_group" "eks_node_group" {
-  count = local.environment == "eks" ? 1 : 0
-  cluster_name    = aws_eks_cluster.main[0].name
-  node_group_name = "${var.cluster_name_eks}-${var.environment}-node_group"
-  node_role_arn   = aws_iam_role.eks_node_group_role[0].arn
-  subnet_ids      = data.aws_subnet_ids.private.ids
+  cluster_name    = aws_eks_cluster.main.name
+  node_group_name = "${var.cluster_name}-${var.environment}-node_group"
+  node_role_arn   = aws_iam_role.eks_node_group_role.arn
+  subnet_ids      = var.public_subnets
   disk_size = var.disk_size
   force_update_version = true
 
   scaling_config {
-    desired_size = 4
+    desired_size = 2
     max_size     = 6
-    min_size     = 4
+    min_size     = 2
   }
 
   instance_types  = [var.eks_node_group_instance_types]
@@ -194,17 +200,71 @@ resource "aws_eks_node_group" "eks_node_group" {
 
 
 data "tls_certificate" "auth" {
-  count = local.environment == "eks" ? 1 : 0
-  url = aws_eks_cluster.main[0].identity[0].oidc[0].issuer
+  url = aws_eks_cluster.main.identity[0].oidc[0].issuer
 }
 
-resource "aws_iam_openid_connect_provider" "main" { 
-  count = local.environment == "eks" ? 1 : 0
+resource "aws_iam_openid_connect_provider" "main" {
   client_id_list  = ["sts.amazonaws.com"]
-  thumbprint_list = [data.tls_certificate.auth[0].certificates[0].sha1_fingerprint]
-  url             = aws_eks_cluster.main[0].identity[0].oidc[0].issuer
+  thumbprint_list = [data.tls_certificate.auth.certificates[0].sha1_fingerprint]
+  url             = aws_eks_cluster.main.identity[0].oidc[0].issuer
     depends_on = [ aws_eks_node_group.eks_node_group ]
   lifecycle {
     ignore_changes = [thumbprint_list]
   }
 }
+```
+
+- variables.tf
+
+
+```
+variable "vpc_id" {
+  description      =  "put your vpc id"
+}
+
+variable "cluster_name" {
+  description = "the name of your stack, e.g. \"demo\""
+}
+
+variable "environment" {
+  description = "the name of your environment, e.g. \"prod\""
+}
+
+variable "eks_node_group_instance_types" {
+  description  = "Instance type of node group"
+}
+
+
+variable "private_subnets" {
+  description = "List of private subnet IDs"
+}
+
+variable "disk_size" {
+  type = number
+}
+```
+
+3. Metric Server
+
+
+- Desplegar metrics server con el siguiente comando:
+
+```
+kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
+```
+
+- Verificar que el metrics-server este corriendo
+
+```
+kubectl get deployment metrics-server -n kube-system
+```
+
+
+# Referencias
+
+- https://kubernetes-sigs.github.io/aws-load-balancer-controller/v1.1/guide/ingress/annotation/
+- 
+
+
+export AWS_ACCESS_KEY_ID=AKIA4Y6RPT343WYCT6EC
+export AWS_SECRET_ACCESS_KEY=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

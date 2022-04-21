@@ -68,7 +68,7 @@ variable "name" {
         variable "replicas" {
           type = string
           description = "El número de instancias de la task definition"
-          default = 3
+          default = 2
         }
         
         # variable "aws_security_group_ecs_tasks_id" {
@@ -76,10 +76,11 @@ variable "name" {
         #   description = "The ID of the security group for the ECS tasks"
         # }
         
-        # variable "region" {
-        #   type = string 
-        #   description = "The AWS region where resources have been deployed"
-        # }
+        variable "region" {
+          type = string 
+          description = "The AWS region where resources have been deployed"
+          default = "us-east-1"
+        }
         
         variable "auto_scaling_max_replicas" {
           type = number
@@ -116,3 +117,24 @@ variable "name" {
         variable "app_port_lb" {
           default = 80
         }
+        
+        
+        
+  # EKS
+  
+  
+  variable "cluster_name_eks" {
+  description = "the name of your stack, e.g. \"demo\""
+  default = "mf"
+}
+
+
+variable "eks_node_group_instance_types" {
+  description  = "Instance type of node group"
+  default = "t2.micro"
+}
+
+variable "disk_size" {
+  type = number
+  default = "20"
+}

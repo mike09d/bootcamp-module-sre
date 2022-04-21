@@ -1,8 +1,9 @@
       resource "aws_ecs_service" "main" {
+                  count = local.environment == "ecs" ? 1 : 0
                   name            = "${var.name}-service"
                   # cluster         = var.cluster_id
-                  cluster         = aws_ecs_cluster.main.id
-                  task_definition = aws_ecs_task_definition.main.family
+                  cluster         = aws_ecs_cluster.main[0].id
+                  task_definition = aws_ecs_task_definition.main[0].family
                   desired_count   = var.replicas
                   launch_type = "FARGATE"
                 
@@ -16,11 +17,11 @@
                     assign_public_ip = true
                   }
                 
-                #   load_balancer {
-                #     target_group_arn = var.nlb_tg_arn
-                #     container_name   = var.name
-                #     container_port   = var.app_port
-                #   }
+                  load_balancer {
+                    target_group_arn = aws_lb_target_group.main[0].arn
+                    container_name   = "${var.name}"
+                    container_port   = var.app_port
+                  }
                 
                   depends_on = [
                     aws_ecs_task_definition.main
@@ -32,21 +33,24 @@
                 
                 
 resource "aws_iam_role" "autoscaling" {
+                  count = local.environment == "ecs" ? 1 : 0
                   name               = "${var.name}-${terraform.workspace}-appautoscaling-role"
                   assume_role_policy = file("./policies/appautoscaling-role.json")
                 }
                 
 resource "aws_iam_role_policy" "autoscaling" {
+              count = local.environment == "ecs" ? 1 : 0
               name   = "${var.name}-${terraform.workspace}-appautoscaling-policy"
               policy = file("./policies/appautoscaling-role-policy.json")
-              role   = aws_iam_role.autoscaling.id
+              role   = aws_iam_role.autoscaling[0].id
             }
             
 resource "aws_appautoscaling_target" "this" {
+                  count = local.environment == "ecs" ? 1 : 0
                   max_capacity       = var.auto_scaling_max_replicas
                   min_capacity       = var.replicas
-                  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main.name}"
-                  role_arn           = aws_iam_role.autoscaling.arn
+                  resource_id        = "service/${var.cluster_name}/${aws_ecs_service.main[0].name}"
+                  role_arn           = aws_iam_role.autoscaling[0].arn
                   scalable_dimension = "ecs:service:DesiredCount"
                   service_namespace  = "ecs"
                 
@@ -54,11 +58,12 @@ resource "aws_appautoscaling_target" "this" {
                 }
                 
 resource "aws_appautoscaling_policy" "memory" {
-              name               = "${aws_ecs_service.main.name}-autoscaling-memory-policy"
+              count = local.environment == "ecs" ? 1 : 0
+              name               = "${aws_ecs_service.main[0].name}-autoscaling-memory-policy"
               policy_type        = "TargetTrackingScaling"
-              resource_id        = aws_appautoscaling_target.this.resource_id
-              scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-              service_namespace  = aws_appautoscaling_target.this.service_namespace
+              resource_id        = aws_appautoscaling_target.this[0].resource_id
+              scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
+              service_namespace  = aws_appautoscaling_target.this[0].service_namespace
             
               target_tracking_scaling_policy_configuration {
                 target_value = var.auto_scaling_max_memory_util
@@ -71,16 +76,17 @@ resource "aws_appautoscaling_policy" "memory" {
                 }
               }
             
-              depends_on = [aws_appautoscaling_target.this]
+              depends_on = [aws_appautoscaling_target.this[0]]
             }
             
             
     resource "aws_appautoscaling_policy" "this" {
-              name               = "${aws_ecs_service.main.name}-autoscaling-cpu-policy"
+              count = local.environment == "ecs" ? 1 : 0
+              name               = "${aws_ecs_service.main[0].name}-autoscaling-cpu-policy"
               policy_type        = "TargetTrackingScaling"
-              resource_id        = aws_appautoscaling_target.this.resource_id
-              scalable_dimension = aws_appautoscaling_target.this.scalable_dimension
-              service_namespace  = aws_appautoscaling_target.this.service_namespace
+              resource_id        = aws_appautoscaling_target.this[0].resource_id
+              scalable_dimension = aws_appautoscaling_target.this[0].scalable_dimension
+              service_namespace  = aws_appautoscaling_target.this[0].service_namespace
             
               target_tracking_scaling_policy_configuration {
                 target_value = var.auto_scaling_max_cpu_util
@@ -93,5 +99,5 @@ resource "aws_appautoscaling_policy" "memory" {
                 }
               }
             
-              depends_on = [aws_appautoscaling_target.this]
+              depends_on = [aws_appautoscaling_target.this[0]]
             }
